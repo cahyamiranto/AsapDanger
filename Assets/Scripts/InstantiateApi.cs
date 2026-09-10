@@ -26,11 +26,19 @@ public class InstantiateApi : MonoBehaviour
         if (listApi != null && listApi.Count > 0)
         {
             GameObject selectedApi = listApi[Random.Range(0, listApi.Count)];
-            ScriptApi api = selectedApi.GetComponent<ScriptApi>();
-            // Memilih objek secara acak dari listApi
-            int randomIndex = Random.Range(0, listApi.Count);
-            selectedApi.SetActive(true);
-            api.orang.SetActive(true);
+            if(selectedApi.activeSelf == false)
+            {
+                ScriptApi api = selectedApi.GetComponent<ScriptApi>();
+                // Memilih objek secara acak dari listApi
+                int randomIndex = Random.Range(0, listApi.Count);
+                selectedApi.SetActive(true);
+                api.orang.SetActive(true);
+                DelayScript delayScript = selectedApi.GetComponentInChildren<DelayScript>();
+                if (delayScript != null)
+                {
+                    delayScript.MulaiTimer(delayScript.delayTime);
+                }
+            }
         }
 
         // Tunggu beberapa detik secara acak antara min dan max
