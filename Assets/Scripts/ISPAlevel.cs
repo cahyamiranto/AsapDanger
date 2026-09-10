@@ -18,7 +18,7 @@ public class ISPAlevel : MonoBehaviour
     private const int MAX_SQUARES = 15;
 
     // The single authoritative counter.
-    private int currentSquares = 0;
+    public int currentSquares = 0;
 
     // ============================================================
     // PLAYABLE AREA
@@ -132,7 +132,8 @@ public class ISPAlevel : MonoBehaviour
 
         UpdateProgressBar();
 
-        StartCoroutine(SpawnLoop());
+        // SpawnLoop dinonaktifkan karena spawning sekarang ditangani oleh InstantiateApi
+        // StartCoroutine(SpawnLoop());
     }
 
     // ============================================================
@@ -270,158 +271,158 @@ public class ISPAlevel : MonoBehaviour
     // SPAWN LOOP
     // ============================================================
 
-    private IEnumerator SpawnLoop()
-    {
-        while (enabled)
-        {
-            float waitTime = Random.Range(
-                minSpawnInterval,
-                maxSpawnInterval
-            );
+    // private IEnumerator SpawnLoop()
+    // {
+    //     while (enabled)
+    //     {
+    //         float waitTime = Random.Range(
+    //             minSpawnInterval,
+    //             maxSpawnInterval
+    //         );
 
-            yield return new WaitForSeconds(
-                waitTime
-            );
+    //         yield return new WaitForSeconds(
+    //             waitTime
+    //         );
 
-            // Never exceed 15 active squares.
-            if (currentSquares >= MAX_SQUARES)
-            {
-                continue;
-            }
+    //         // Never exceed 15 active squares.
+    //         if (currentSquares >= MAX_SQUARES)
+    //         {
+    //             continue;
+    //         }
 
-            SpawnSquare();
-        }
-    }
+    //         SpawnSquare();
+    //     }
+    // }
 
     // ============================================================
     // SPAWN SQUARE
     // ============================================================
 
-    private void SpawnSquare()
-    {
-        // Safety check.
-        ClampCounter();
+    // private void SpawnSquare()
+    // {
+    //     // Safety check.
+    //     ClampCounter();
 
-        if (currentSquares >= MAX_SQUARES)
-        {
-            return;
-        }
+    //     if (currentSquares >= MAX_SQUARES)
+    //     {
+    //         return;
+    //     }
 
-        GameObject squareObject = new GameObject(
-            "ClickableSquare",
-            typeof(RectTransform),
-            typeof(Image)
-        );
+    //     GameObject squareObject = new GameObject(
+    //         "ClickableSquare",
+    //         typeof(RectTransform),
+    //         typeof(Image)
+    //     );
 
-        squareObject.transform.SetParent(
-            uiCanvas,
-            false
-        );
+    //     squareObject.transform.SetParent(
+    //         uiCanvas,
+    //         false
+    //     );
 
-        RectTransform squareRect =
-            squareObject.GetComponent<RectTransform>();
+    //     RectTransform squareRect =
+    //         squareObject.GetComponent<RectTransform>();
 
-        Image squareImage =
-            squareObject.GetComponent<Image>();
+    //     Image squareImage =
+    //         squareObject.GetComponent<Image>();
 
-        // Set square size.
-        squareRect.sizeDelta =
-            new Vector2(
-                squareSize,
-                squareSize
-            );
+    //     // Set square size.
+    //     squareRect.sizeDelta =
+    //         new Vector2(
+    //             squareSize,
+    //             squareSize
+    //         );
 
-        // Set appearance.
-        squareImage.color =
-            squareColor;
+    //     // Set appearance.
+    //     squareImage.color =
+    //         squareColor;
 
-        squareImage.raycastTarget =
-            true;
+    //     squareImage.raycastTarget =
+    //         true;
 
-        // Put it at a random valid position.
-        squareRect.anchoredPosition =
-            GetRandomPlayablePosition();
+    //     // Put it at a random valid position.
+    //     squareRect.anchoredPosition =
+    //         GetRandomPlayablePosition();
 
-        // Add the click handler.
-        ClickableSquare clickableSquare =
-            squareObject.AddComponent<ClickableSquare>();
+    //     // Add the click handler.
+    //     ClickableSquare clickableSquare =
+    //         squareObject.AddComponent<ClickableSquare>();
 
-        clickableSquare.Initialize(
-            this
-        );
+    //     clickableSquare.Initialize(
+    //         this
+    //     );
 
-        // --------------------------------------------------------
-        // IMPORTANT:
-        // Only now do we increment the authoritative counter.
-        // --------------------------------------------------------
+    //     // --------------------------------------------------------
+    //     // IMPORTANT:
+    //     // Only now do we increment the authoritative counter.
+    //     // --------------------------------------------------------
 
-        currentSquares++;
+    //     currentSquares++;
 
-        ClampCounter();
+    //     ClampCounter();
 
-        UpdateProgressBar();
-    }
+    //     UpdateProgressBar();
+    // }
 
     // ============================================================
     // RANDOM POSITION
     // ============================================================
 
-    private Vector2 GetRandomPlayablePosition()
-    {
-        Rect canvasRect =
-            uiCanvas.rect;
+    // private Vector2 GetRandomPlayablePosition()
+    // {
+    //     Rect canvasRect =
+    //         uiCanvas.rect;
 
-        float halfSquare =
-            squareSize * 0.5f;
+    //     float halfSquare =
+    //         squareSize * 0.5f;
 
-        float minX =
-            canvasRect.xMin +
-            playableAreaPadding +
-            halfSquare;
+    //     float minX =
+    //         canvasRect.xMin +
+    //         playableAreaPadding +
+    //         halfSquare;
 
-        float maxX =
-            canvasRect.xMax -
-            playableAreaPadding -
-            halfSquare;
+    //     float maxX =
+    //         canvasRect.xMax -
+    //         playableAreaPadding -
+    //         halfSquare;
 
-        float minY =
-            canvasRect.yMin +
-            playableAreaPadding +
-            halfSquare;
+    //     float minY =
+    //         canvasRect.yMin +
+    //         playableAreaPadding +
+    //         halfSquare;
 
-        float maxY =
-            canvasRect.yMax -
-            playableAreaPadding -
-            halfSquare;
+    //     float maxY =
+    //         canvasRect.yMax -
+    //         playableAreaPadding -
+    //         halfSquare;
 
-        // Prevent invalid ranges on very small canvases.
-        if (maxX < minX)
-        {
-            float centerX =
-                (canvasRect.xMin +
-                 canvasRect.xMax) *
-                0.5f;
+    //     // Prevent invalid ranges on very small canvases.
+    //     if (maxX < minX)
+    //     {
+    //         float centerX =
+    //             (canvasRect.xMin +
+    //              canvasRect.xMax) *
+    //             0.5f;
 
-            minX = centerX;
-            maxX = centerX;
-        }
+    //         minX = centerX;
+    //         maxX = centerX;
+    //     }
 
-        if (maxY < minY)
-        {
-            float centerY =
-                (canvasRect.yMin +
-                 canvasRect.yMax) *
-                0.5f;
+    //     if (maxY < minY)
+    //     {
+    //         float centerY =
+    //             (canvasRect.yMin +
+    //              canvasRect.yMax) *
+    //             0.5f;
 
-            minY = centerY;
-            maxY = centerY;
-        }
+    //         minY = centerY;
+    //         maxY = centerY;
+    //     }
 
-        return new Vector2(
-            Random.Range(minX, maxX),
-            Random.Range(minY, maxY)
-        );
-    }
+    //     return new Vector2(
+    //         Random.Range(minX, maxX),
+    //         Random.Range(minY, maxY)
+    //     );
+    // }
 
     // ============================================================
     // SQUARE CLICKED
@@ -463,7 +464,7 @@ public class ISPAlevel : MonoBehaviour
     // COUNTER CLAMP
     // ============================================================
 
-    private void ClampCounter()
+    public void ClampCounter()
     {
         currentSquares =
             Mathf.Clamp(
@@ -477,7 +478,7 @@ public class ISPAlevel : MonoBehaviour
     // PROGRESS BAR UPDATE
     // ============================================================
 
-    private void UpdateProgressBar()
+    public void UpdateProgressBar()
     {
         if (fillImage == null)
         {
@@ -565,7 +566,7 @@ public class ISPAlevel : MonoBehaviour
     public void ResetGame()
     {
         ClickableSquare[] squares =
-    FindObjectsByType<ClickableSquare>();
+            FindObjectsByType<ClickableSquare>(FindObjectsSortMode.None);
 
 
         foreach (ClickableSquare square in squares)
@@ -591,18 +592,18 @@ public class ISPAlevel : MonoBehaviour
     // ============================================================
 
     [ContextMenu("Spawn Square Now")]
-    private void SpawnSquareFromEditor()
-    {
-        if (!Application.isPlaying)
-        {
-            return;
-        }
+    // private void SpawnSquareFromEditor()
+    // {
+    //     if (!Application.isPlaying)
+    //     {
+    //         return;
+    //     }
 
-        if (currentSquares < MAX_SQUARES)
-        {
-            SpawnSquare();
-        }
-    }
+    //     if (currentSquares < MAX_SQUARES)
+    //     {
+    //         SpawnSquare();
+    //     }
+    // }
 
     // ============================================================
     // DEBUG: RESET

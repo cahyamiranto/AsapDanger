@@ -10,8 +10,19 @@ public class InstantiateApi : MonoBehaviour
     [Header("Interval Waktu Spawn (Detik)")]
     public float min = 1f;
     public float max = 3f;
+    float waitTime;
+    [SerializeField] ISPAlevel ispaLevel; // Referensi ke script ISPAlevel
 
 
+
+    void Awake()
+    {
+        // Otomatis mencari ISPAlevel jika belum di-assign di Inspector
+        if (ispaLevel == null)
+        {
+            ispaLevel = FindAnyObjectByType<ISPAlevel>();
+        }
+    }
 
     void Start()
     {
@@ -22,18 +33,31 @@ public class InstantiateApi : MonoBehaviour
     // Coroutine untuk instantiate object listApi
     public IEnumerator SpawnApiRoutine()
     {
-        float waitTime;
         // Memastikan list tidak kosong
         if (listApi != null && listApi.Count > 0)
         {
             GameObject selectedApi = listApi[Random.Range(0, listApi.Count)];
-            if(selectedApi.activeSelf == false)
+            if(selectedApi != null && selectedApi.activeSelf == false)
             {
                 ScriptApi api = selectedApi.GetComponent<ScriptApi>();
-                // Memilih objek secara acak dari listApi
-                int randomIndex = Random.Range(0, listApi.Count);
                 selectedApi.SetActive(true);
-                api.orang.SetActive(true);
+
+                if (api != null && api.orang != null)
+                {
+                    api.orang.SetActive(true);
+                }
+
+                if (ispaLevel != null)
+                {
+                    ispaLevel.currentSquares++; // Menambah counter currentSquares di script ISPAlevel
+                    ispaLevel.ClampCounter(); // Memanggil fungsi ClampCounter() dari script ISPAlevel
+                    ispaLevel.UpdateProgressBar(); // Memanggil fungsi UpdateProgressBar() dari script ISPAlevel
+                }
+                else
+                {
+                    Debug.LogWarning("ISPAlevel belum di-assign pada InstantiateApi dan tidak ditemukan di Scene!");
+                }
+
                 DelayScript delayScript = selectedApi.GetComponentInChildren<DelayScript>();
                 if (delayScript != null)
                 {
