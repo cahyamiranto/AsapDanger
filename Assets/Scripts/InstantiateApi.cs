@@ -22,6 +22,7 @@ public class InstantiateApi : MonoBehaviour
     // Coroutine untuk instantiate object listApi
     public IEnumerator SpawnApiRoutine()
     {
+        float waitTime;
         // Memastikan list tidak kosong
         if (listApi != null && listApi.Count > 0)
         {
@@ -37,12 +38,15 @@ public class InstantiateApi : MonoBehaviour
                 if (delayScript != null)
                 {
                     delayScript.MulaiTimer(delayScript.delayTime);
+                    waitTime = Random.Range(Mathf.Min(min, max), Mathf.Max(min, max));
                 }
+            }
+            else{
+                waitTime = 0;
             }
         }
 
         // Tunggu beberapa detik secara acak antara min dan max
-        float waitTime = Random.Range(Mathf.Min(min, max), Mathf.Max(min, max));
         yield return new WaitForSeconds(waitTime);
 
         // Di akhir coroutine panggil lagi coroutine tersebut
