@@ -20,7 +20,7 @@ public class ClickableTarget : MonoBehaviour
             {
                 if (!ScoreManager.Instance.BisaPadamkanBush())
                 {
-                    // Score tidak cukup: jangan kurangi quest dan JANGAN delete object
+                    // Score tidak cukup: jangan kurangi quest dan JANGAN nonaktifkan object
                     return; 
                 }
 
@@ -33,9 +33,8 @@ public class ClickableTarget : MonoBehaviour
                 QuestManager.Instance.KurangiPadamkan();
             }
 
-            // 3. Hapus sprite bush dari scene
-            //Destroy(gameObject);
-            gameObject.SetActive(false);
+            // 3. Nonaktifkan parent dari objek ini
+            HideParent();
         }
         else if (tipeTarget == TargetType.NpcLapor)
         {
@@ -51,8 +50,19 @@ public class ClickableTarget : MonoBehaviour
                 ScoreManager.Instance.OnNpcClicked();
             }
 
-            // 3. Hapus sprite NPC dari scene
-            //Destroy(gameObject);
+            // 3. Nonaktifkan parent dari objek ini
+            gameObject.SetActive(false);
+        }
+    }
+
+    private void HideParent()
+    {
+        if (transform.parent != null)
+        {
+            transform.parent.gameObject.SetActive(false);
+        }
+        else
+        {
             gameObject.SetActive(false);
         }
     }

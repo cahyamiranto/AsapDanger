@@ -11,6 +11,7 @@ public class InstantiateApi : MonoBehaviour
     public float min = 1f;
     public float max = 3f;
 
+    float waitTime;
 
 
     void Start()
@@ -22,7 +23,6 @@ public class InstantiateApi : MonoBehaviour
     // Coroutine untuk instantiate object listApi
     public IEnumerator SpawnApiRoutine()
     {
-        float waitTime;
         // Memastikan list tidak kosong
         if (listApi != null && listApi.Count > 0)
         {
