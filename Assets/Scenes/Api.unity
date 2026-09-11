@@ -346,7 +346,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 652497886}
-  - component: {fileID: 652497885}
+  - component: {fileID: 652497887}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -354,25 +354,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &652497885
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 652497884}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fcc6644a66e7c40f2910797265e4b572, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  progressBar: {fileID: 0}
-  countText: {fileID: 0}
-  maxFireCount: 15
-  warningThreshold: 10
-  normalColor: {r: 0, g: 1, b: 0, a: 1}
-  warningColor: {r: 1, g: 0, b: 0, a: 1}
-  manualFireCount: 2
 --- !u!4 &652497886
 Transform:
   m_ObjectHideFlags: 0
@@ -388,6 +369,30 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &652497887
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 652497884}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f49e24b4c83f4f6a92d0e1c7e131853, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  listApi:
+  - {fileID: 2033255285}
+  - {fileID: 1661769314}
+  - {fileID: 2096334176}
+  - {fileID: 687999898}
+  - {fileID: 761777123}
+  - {fileID: 99522637}
+  - {fileID: 822649104}
+  - {fileID: 492378837}
+  min: 1
+  max: 3
+  ispaLevel: {fileID: 1229470294}
 --- !u!1 &687999898 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 5652975668033604523, guid: f3245cbd6f9bc47b5a25bc8fd04e101a, type: 3}
@@ -549,6 +554,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1229470293}
+  - component: {fileID: 1229470294}
   m_Layer: 5
   m_Name: GameObject
   m_TagString: Untagged
@@ -575,6 +581,31 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1229470294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1229470292}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94adecde5a63f4544b3ba03ecbb5f8a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  minSpawnInterval: 0.5
+  maxSpawnInterval: 2
+  squareSize: 30
+  currentSquares: 0
+  uiCanvas: {fileID: 1452310296}
+  playableAreaPadding: 20
+  squareColor: {r: 0.1, g: 0.8, b: 1, a: 1}
+  progressBarWidth: 500
+  progressBarHeight: 30
+  progressBarTopMargin: 40
+  trackColor: {r: 0.25, g: 0.25, b: 0.25, a: 1}
+  orangeFillColor: {r: 1, g: 0.55, b: 0.05, a: 1}
+  redFillColor: {r: 0.95, g: 0.05, b: 0.05, a: 1}
 --- !u!1 &1278758544
 GameObject:
   m_ObjectHideFlags: 0
@@ -694,6 +725,7 @@ MonoBehaviour:
   - {fileID: 492378837}
   min: 1
   max: 3
+  ispaLevel: {fileID: 1229470294}
 --- !u!4 &1330349323
 Transform:
   m_ObjectHideFlags: 0
@@ -1303,10 +1335,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3232463675812180281, guid: f3245cbd6f9bc47b5a25bc8fd04e101a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f3245cbd6f9bc47b5a25bc8fd04e101a, type: 3}
 --- !u!1 &2096334176 stripped
 GameObject:
@@ -1377,10 +1406,7 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3232463675812180281, guid: f3245cbd6f9bc47b5a25bc8fd04e101a, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 0}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f3245cbd6f9bc47b5a25bc8fd04e101a, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

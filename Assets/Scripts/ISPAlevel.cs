@@ -17,7 +17,7 @@ public class ISPAlevel : MonoBehaviour
 
     private const int MAX_SQUARES = 15;
 
-    private int currentSquares = 0;
+    public int currentSquares = 0;
 
     // ============================================================
     // PLAYABLE AREA
@@ -939,7 +939,7 @@ public class ISPAlevel : MonoBehaviour
     // COUNTER CLAMP
     // ============================================================
 
-    private void ClampCounter()
+    public void ClampCounter()
     {
         currentSquares =
             Mathf.Clamp(
@@ -953,7 +953,7 @@ public class ISPAlevel : MonoBehaviour
     // UPDATE PROGRESS BAR
     // ============================================================
 
-    private void UpdateProgressBar()
+    public void UpdateProgressBar()
     {
         if (fillImage == null)
         {
@@ -1042,9 +1042,7 @@ public class ISPAlevel : MonoBehaviour
     public void ResetGame()
     {
         ClickableSquare[] squares =
-            FindObjectsByType<
-                ClickableSquare
-            >();
+            FindObjectsByType<ClickableSquare>(FindObjectsSortMode.None);
 
         foreach (
             ClickableSquare square

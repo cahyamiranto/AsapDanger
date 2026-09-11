@@ -39,7 +39,7 @@ namespace HappyHarvest
 
         private void Start()
         {
-            GameManager.RegisterEventHandler(this);
+            //GameManager.RegisterEventHandler(this);
         }
 
         private void OnDisable()
