@@ -8,6 +8,9 @@ public class DelayScript : MonoBehaviour
     public float delayTime = 2f; // Waktu delay dalam detik sesuai input user
     public TMP_Text timerText;   // Referensi Text (TMP) untuk menampilkan angka hitung mundur
 
+    [Header("Pengaturan Objek Api")]
+    public GameObject objectApi; // Referensi GameObject api
+
     [Header("Status Timer")]
     public float sisaWaktu;      // Sisa waktu hitung mundur (dapat dilihat di Inspector)
 
@@ -19,6 +22,19 @@ public class DelayScript : MonoBehaviour
         if (timerText == null)
         {
             timerText = GetComponentInChildren<TMP_Text>();
+        }
+    }
+
+    // Dipanggil otomatis oleh Unity saat GameObject ini di-nonaktifkan (SetActive(false))
+    private void OnDisable()
+    {
+        if (objectApi != null)
+        {
+            BoxCollider2D col = objectApi.GetComponent<BoxCollider2D>();
+            if (col != null)
+            {
+                col.enabled = true;
+            }
         }
     }
 
@@ -67,7 +83,6 @@ public class DelayScript : MonoBehaviour
         }
 
         // Lakukan sesuatu setelah delay / timer habis
-        gameObject.SetActive(false); // Mengnonaktifkan objek setelah timer selesai
+        gameObject.SetActive(false); // Menonaktifkan objek setelah timer selesai (otomatis memicu OnDisable)
     }
 }
-

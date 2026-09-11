@@ -7,11 +7,11 @@ public class ScoreManager : MonoBehaviour
     public static ScoreManager Instance { get; private set; }
 
     [Header("Pengaturan Nilai Score (Editable)")]
-    [Tooltip("Biaya/poin saat Bush diklik (isi angka positif atau negatif)")]
-    [SerializeField] private int biayaPadamkanBush = 5; // Nilai biaya pemadaman
+    [Tooltip("Biaya saat padam sendiri (berkurang 100.000)")]
+    [SerializeField] private int biayaPadamkanBush = 100000;
 
-    [Tooltip("Poin yang didapat saat NPC diklik")]
-    [SerializeField] private int poinNpc = 5;
+    [Tooltip("Poin yang didapat saat lapor NPC (+500.000)")]
+    [SerializeField] private int poinNpc = 500000;
 
     [Header("Pengaturan Blink Merah")]
     [SerializeField] private Color warnaPeringatan = Color.red;
@@ -42,15 +42,10 @@ public class ScoreManager : MonoBehaviour
         UpdateScoreUI();
     }
 
-    /// <summary>
-    /// Mengecek apakah skor cukup untuk memadamkan bush.
-    /// Jika tidak cukup, otomatis memicu blink merah.
-    /// </summary>
     public bool BisaPadamkanBush()
     {
         int biaya = Mathf.Abs(biayaPadamkanBush);
 
-        // Jika score 0 atau kurang dari biaya yang dibutuhkan
         if (currentScore <= 0 || currentScore < biaya)
         {
             TriggerBlinkMerah();
@@ -62,7 +57,6 @@ public class ScoreManager : MonoBehaviour
 
     public void OnBushBerhasilDipadamkan()
     {
-        // Kurangi score sebesar biaya
         TambahScore(-Mathf.Abs(biayaPadamkanBush));
     }
 
@@ -108,8 +102,23 @@ public class ScoreManager : MonoBehaviour
     {
         if (textScore != null)
         {
-            textScore.text = $"Score: {currentScore}";
+            textScore.text = $"{FormatScore(currentScore)}";
         }
+    }
+
+    /// <summary>
+    /// Mengubah format angka ke satuan 'K' jika >= 1000.
+    /// Contoh: 950 -> "950", 1000 -> "1K", 100000 -> "100K", 1500 -> "1.5K"
+    /// </summary>
+    private string FormatScore(int score)
+    {
+        if (score >= 1000)
+        {
+            float nilaiK = score / 1000f;
+            return $"{nilaiK:0.##}K";
+        }
+
+        return score.ToString();
     }
 
     public int GetCurrentScore() => currentScore;

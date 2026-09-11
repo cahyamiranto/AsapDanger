@@ -76,10 +76,12 @@ public class QuestManager : MonoBehaviour
     private void UpdateUI()
     {
         if (textQuestLapor != null)
-            textQuestLapor.text = $"Lapor: {sisaLapor}";
+            textQuestLapor.text = $"{sisaLapor}";
+            //textQuestLapor.text = $"Lapor: {sisaLapor}";
 
         if (textQuestPadamkan != null)
-            textQuestPadamkan.text = $"Padamin Sendiri: {sisaPadamkan}";
+            textQuestPadamkan.text = $"{sisaPadamkan}";
+            //textQuestPadamkan.text = $"Padamin Sendiri: {sisaPadamkan}";
 
         if (textLevel != null)
             textLevel.text = $"Level: {currentLevel}";

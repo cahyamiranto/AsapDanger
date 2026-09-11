@@ -817,7 +817,7 @@ BoxCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3629912496745646323}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Density: 1
   m_Material: {fileID: 0}
@@ -1502,6 +1502,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   delayTime: 5
   timerText: {fileID: 1018452227550248727}
+  objectApi: {fileID: 3629912496745646323}
   sisaWaktu: 0
 --- !u!4 &6707489779265314983 stripped
 Transform:
