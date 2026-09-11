@@ -12,9 +12,7 @@ public class InstantiateApi : MonoBehaviour
     public float max = 3f;
     float waitTime;
     [SerializeField] ISPAlevel ispaLevel; // Referensi ke script ISPAlevel
-
-
-
+    
     void Awake()
     {
         // Otomatis mencari ISPAlevel jika belum di-assign di Inspector

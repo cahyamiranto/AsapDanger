@@ -2,10 +2,11 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using UnityEngine.Networking;
 
 public class ISPAlevel : MonoBehaviour
 {
+    // Tambahkan Singleton agar mudah diakses
+    public static ISPAlevel Instance { get; private set; }
     // ============================================================
     // GAME SETTINGS
     // ============================================================
@@ -15,7 +16,9 @@ public class ISPAlevel : MonoBehaviour
     [SerializeField] private float maxSpawnInterval = 2.0f;
     [SerializeField] private float squareSize = 30f;
 
+    // Maximum number of active squares.
     private const int MAX_SQUARES = 15;
+
 
     public int currentSquares = 0;
 
@@ -43,103 +46,43 @@ public class ISPAlevel : MonoBehaviour
     // ============================================================
 
     [Header("Progress Bar")]
-
     [SerializeField] private float progressBarWidth = 500f;
-
     [SerializeField] private float progressBarHeight = 30f;
-
     [SerializeField] private float progressBarTopMargin = 40f;
 
-    [Tooltip("Thickness of the grey border surrounding the fill.")]
-    [SerializeField] private float progressBarBorderThickness = 7f;
-
-    [Tooltip("Roundness of the progress bar corners.")]
-    [SerializeField] private float progressBarCornerRadius = 15f;
-
-    // Grey track
     [SerializeField] private Color trackColor =
         new Color(0.25f, 0.25f, 0.25f, 1f);
 
-    // Pink at zero
-    [SerializeField] private Color pinkFillColor =
-        new Color(1f, 0.20f, 0.55f, 1f);
+    [SerializeField] private Color orangeFillColor =
+        new Color(1f, 0.55f, 0.05f, 1f);
 
-    // Dark purple at maximum
-    [SerializeField] private Color darkPurpleFillColor =
-        new Color(0.22f, 0.02f, 0.30f, 1f);
+    [SerializeField] private Color redFillColor =
+        new Color(0.95f, 0.05f, 0.05f, 1f);
 
     // ============================================================
-    // LUNG IMAGE
-    // ============================================================
-
-    [Header("Lung Image")]
-
-    [Tooltip("Image displayed at the end of the progress bar.")]
-    [SerializeField]
-    private string lungImageURL =
-        "https://static.vecteezy.com/system/resources/thumbnails/072/638/320/small/illustration-of-human-lungs-in-pink-color-122-png.png";
-
-    [Tooltip("Size of the lung image.")]
-    [SerializeField]
-    private float lungImageSize = 70f;
-
-    [Tooltip("How far the lung image sits above/beside the end of the bar.")]
-    [SerializeField]
-    private float lungVerticalOffset = 0f;
-
-    [Tooltip("Brightness when there are 0 squares.")]
-    [SerializeField]
-    private float lungBrightnessAtZero = 1f;
-
-    [Tooltip("Brightness when there are 15 squares.")]
-    [SerializeField]
-    private float lungBrightnessAtMaximum = 0.35f;
-
-    [Tooltip("Scale when lung is in its large state.")]
-    [SerializeField]
-    private float lungLargeScale = 1f;
-
-    [Tooltip("Scale when lung is in its small state.")]
-    [SerializeField]
-    private float lungSmallScale = 0.8f;
-
-    [Tooltip("Seconds between each scale change.")]
-    [SerializeField]
-    private float lungPulseInterval = 1f;
-
-    // ============================================================
-    // UI REFERENCES
+    // UI REFERENCES CREATED AT RUNTIME
     // ============================================================
 
     private RectTransform progressBarRoot;
-
     private Image trackImage;
-
     private Image fillImage;
-
-    private RectTransform fillRect;
-
-    private Image lungImage;
-
-    private RectTransform lungRect;
-
-    private Sprite roundedSprite;
 
     // ============================================================
     // UNITY
     // ============================================================
 
     private void Awake()
-    {
-        minSpawnInterval = Mathf.Max(0.05f, minSpawnInterval);
+    {// Setup Singleton
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
 
+        minSpawnInterval = Mathf.Max(0.05f, minSpawnInterval);
         maxSpawnInterval = Mathf.Max(
             minSpawnInterval,
             maxSpawnInterval
         );
 
         squareSize = Mathf.Max(5f, squareSize);
-
         playableAreaPadding = Mathf.Max(
             0f,
             playableAreaPadding
@@ -160,39 +103,14 @@ public class ISPAlevel : MonoBehaviour
             progressBarTopMargin
         );
 
-        progressBarBorderThickness = Mathf.Max(
-            1f,
-            progressBarBorderThickness
-        );
-
-        progressBarCornerRadius = Mathf.Max(
-            1f,
-            progressBarCornerRadius
-        );
-
-        lungImageSize = Mathf.Max(
-            1f,
-            lungImageSize
-        );
-
-        lungPulseInterval = Mathf.Max(
-            0.05f,
-            lungPulseInterval
-        );
-
-        // --------------------------------------------------------
-        // FIND CANVAS
-        // --------------------------------------------------------
-
+        // Try to automatically find a Canvas.
         if (uiCanvas == null)
         {
-            Canvas canvas =
-                FindAnyObjectByType<Canvas>();
+            Canvas canvas = FindAnyObjectByType<Canvas>();
 
             if (canvas != null)
             {
-                uiCanvas =
-                    canvas.GetComponent<RectTransform>();
+                uiCanvas = canvas.GetComponent<RectTransform>();
             }
         }
 
@@ -208,63 +126,35 @@ public class ISPAlevel : MonoBehaviour
             return;
         }
 
-        // --------------------------------------------------------
-        // CREATE UI
-        // --------------------------------------------------------
-
         CreateProgressBar();
 
-        currentSquares =
-            Mathf.Clamp(
-                currentSquares,
-                0,
-                MAX_SQUARES
-            );
+        // Make sure the initial state is correct.
+        currentSquares = Mathf.Clamp(
+            currentSquares,
+            0,
+            MAX_SQUARES
+        );
 
         UpdateProgressBar();
 
-        // Load lung image.
-        StartCoroutine(
-            LoadLungImage()
-        );
-
-        // Start lung animation.
-        StartCoroutine(
-            LungPulseLoop()
-        );
-
-        // Start spawning.
-        StartCoroutine(
-            SpawnLoop()
-        );
+        // SpawnLoop dinonaktifkan karena spawning sekarang ditangani oleh InstantiateApi
+        // StartCoroutine(SpawnLoop());
     }
 
     // ============================================================
-    // CREATE PROGRESS BAR
+    // PROGRESS BAR CREATION
     // ============================================================
 
     private void CreateProgressBar()
     {
         // --------------------------------------------------------
-        // CREATE ROUNDED SPRITE
-        // --------------------------------------------------------
-
-        roundedSprite =
-            CreateRoundedSprite(
-                128,
-                128,
-                progressBarCornerRadius
-            );
-
-        // --------------------------------------------------------
         // PROGRESS BAR ROOT
         // --------------------------------------------------------
 
-        GameObject rootObject =
-            new GameObject(
-                "ProgressBar",
-                typeof(RectTransform)
-            );
+        GameObject rootObject = new GameObject(
+            "ProgressBar",
+            typeof(RectTransform)
+        );
 
         rootObject.transform.SetParent(
             uiCanvas,
@@ -299,12 +189,11 @@ public class ISPAlevel : MonoBehaviour
         // GREY TRACK
         // --------------------------------------------------------
 
-        GameObject trackObject =
-            new GameObject(
-                "Track",
-                typeof(RectTransform),
-                typeof(Image)
-            );
+        GameObject trackObject = new GameObject(
+            "Track",
+            typeof(RectTransform),
+            typeof(Image)
+        );
 
         trackObject.transform.SetParent(
             progressBarRoot,
@@ -329,12 +218,6 @@ public class ISPAlevel : MonoBehaviour
         trackRect.offsetMax =
             Vector2.zero;
 
-        trackImage.sprite =
-            roundedSprite;
-
-        trackImage.type =
-            Image.Type.Sliced;
-
         trackImage.color =
             trackColor;
 
@@ -345,25 +228,24 @@ public class ISPAlevel : MonoBehaviour
         // FILL
         // --------------------------------------------------------
 
-        GameObject fillObject =
-            new GameObject(
-                "Fill",
-                typeof(RectTransform),
-                typeof(Image)
-            );
+        GameObject fillObject = new GameObject(
+            "Fill",
+            typeof(RectTransform),
+            typeof(Image)
+        );
 
         fillObject.transform.SetParent(
             progressBarRoot,
             false
         );
 
-        fillRect =
+        RectTransform fillRect =
             fillObject.GetComponent<RectTransform>();
 
         fillImage =
             fillObject.GetComponent<Image>();
 
-        // The fill stays inside the grey track.
+        // Anchor to the left so the width grows horizontally.
         fillRect.anchorMin =
             new Vector2(0f, 0f);
 
@@ -374,536 +256,189 @@ public class ISPAlevel : MonoBehaviour
             new Vector2(0f, 0.5f);
 
         fillRect.anchoredPosition =
-            new Vector2(
-                progressBarBorderThickness,
-                0f
-            );
+            new Vector2(3f, 0f);
 
+        // Grey track remains visible around the fill.
         fillRect.sizeDelta =
             new Vector2(
                 0f,
-                -progressBarBorderThickness * 2f
+                -6f
             );
 
-        fillImage.sprite =
-            roundedSprite;
-
-        fillImage.type =
-            Image.Type.Sliced;
-
         fillImage.color =
-            pinkFillColor;
+            orangeFillColor;
 
         fillImage.raycastTarget =
             false;
     }
 
     // ============================================================
-    // ROUNDED SPRITE CREATION
-    // ============================================================
-
-    private Sprite CreateRoundedSprite(
-        int textureWidth,
-        int textureHeight,
-        float radius
-    )
-    {
-        Texture2D texture =
-            new Texture2D(
-                textureWidth,
-                textureHeight,
-                TextureFormat.RGBA32,
-                false
-            );
-
-        texture.name =
-            "ProceduralRoundedProgressBar";
-
-        texture.wrapMode =
-            TextureWrapMode.Clamp;
-
-        Color32[] pixels =
-            new Color32[
-                textureWidth *
-                textureHeight
-            ];
-
-        float r =
-            Mathf.Clamp(
-                radius,
-                1f,
-                Mathf.Min(
-                    textureWidth,
-                    textureHeight
-                ) * 0.5f
-            );
-
-        for (int y = 0; y < textureHeight; y++)
-        {
-            for (int x = 0; x < textureWidth; x++)
-            {
-                float px = x + 0.5f;
-                float py = y + 0.5f;
-
-                float dx = 0f;
-                float dy = 0f;
-
-                if (px < r)
-                {
-                    dx = r - px;
-                }
-                else if (px > textureWidth - r)
-                {
-                    dx = px - (textureWidth - r);
-                }
-
-                if (py < r)
-                {
-                    dy = r - py;
-                }
-                else if (py > textureHeight - r)
-                {
-                    dy = py - (textureHeight - r);
-                }
-
-                float distance =
-                    Mathf.Sqrt(
-                        dx * dx +
-                        dy * dy
-                    );
-
-                float alpha =
-                    distance <= r
-                        ? 1f
-                        : 0f;
-
-                pixels[
-                    y * textureWidth + x
-                ] =
-                    new Color(
-                        1f,
-                        1f,
-                        1f,
-                        alpha
-                    );
-            }
-        }
-
-        texture.SetPixels32(pixels);
-        texture.Apply();
-
-        float border =
-            textureWidth * 0.5f;
-
-        Sprite sprite =
-            Sprite.Create(
-                texture,
-                new Rect(
-                    0,
-                    0,
-                    textureWidth,
-                    textureHeight
-                ),
-                new Vector2(0.5f, 0.5f),
-                100f,
-                0,
-                SpriteMeshType.FullRect,
-                new Vector4(
-                    border,
-                    border,
-                    border,
-                    border
-                )
-            );
-
-        return sprite;
-    }
-
-    // ============================================================
-    // LUNG IMAGE LOADING
-    // ============================================================
-
-    private IEnumerator LoadLungImage()
-    {
-        using (
-            UnityWebRequest request =
-                UnityWebRequestTexture.GetTexture(
-                    lungImageURL
-                )
-        )
-        {
-            yield return request.SendWebRequest();
-
-            if (
-                request.result !=
-                UnityWebRequest.Result.Success
-            )
-            {
-                Debug.LogError(
-                    "ISPAlevel: Could not load lung image: " +
-                    request.error
-                );
-
-                yield break;
-            }
-
-            Texture2D texture =
-                DownloadHandlerTexture
-                    .GetContent(request);
-
-            if (texture == null)
-            {
-                Debug.LogError(
-                    "ISPAlevel: Lung image texture is null."
-                );
-
-                yield break;
-            }
-
-            Sprite lungSprite =
-                Sprite.Create(
-                    texture,
-                    new Rect(
-                        0,
-                        0,
-                        texture.width,
-                        texture.height
-                    ),
-                    new Vector2(
-                        0.5f,
-                        0.5f
-                    ),
-                    100f,
-                    0,
-                    SpriteMeshType.FullRect
-                );
-
-            CreateLungUI(
-                lungSprite
-            );
-        }
-    }
-
-    // ============================================================
-    // CREATE LUNG UI
-    // ============================================================
-
-    private void CreateLungUI(
-        Sprite lungSprite
-    )
-    {
-        GameObject lungObject =
-            new GameObject(
-                "Lung",
-                typeof(RectTransform),
-                typeof(Image)
-            );
-
-        lungObject.transform.SetParent(
-            progressBarRoot,
-            false
-        );
-
-        lungRect =
-            lungObject.GetComponent<RectTransform>();
-
-        lungImage =
-            lungObject.GetComponent<Image>();
-
-        lungRect.anchorMin =
-            new Vector2(0f, 0.5f);
-
-        lungRect.anchorMax =
-            new Vector2(0f, 0.5f);
-
-        lungRect.pivot =
-            new Vector2(0.5f, 0.5f);
-
-        lungRect.sizeDelta =
-            new Vector2(
-                lungImageSize,
-                lungImageSize
-            );
-
-        lungImage.sprite =
-            lungSprite;
-
-        lungImage.preserveAspect =
-            true;
-
-        lungImage.raycastTarget =
-            false;
-
-        UpdateLungPosition();
-
-        UpdateLungBrightness();
-    }
-
-    // ============================================================
-    // LUNG POSITION
-    // ============================================================
-
-    private void UpdateLungPosition()
-    {
-        if (
-            lungRect == null ||
-            fillRect == null
-        )
-        {
-            return;
-        }
-
-        float progress =
-            (float)currentSquares /
-            MAX_SQUARES;
-
-        progress =
-            Mathf.Clamp01(progress);
-
-        float usableWidth =
-            progressBarWidth -
-            progressBarBorderThickness * 2f;
-
-        usableWidth =
-            Mathf.Max(
-                0f,
-                usableWidth
-            );
-
-        float fillWidth =
-            usableWidth * progress;
-
-        // The lung sits exactly at the right end
-        // of the fill.
-        float lungX =
-            progressBarBorderThickness +
-            fillWidth;
-
-        lungRect.anchoredPosition =
-            new Vector2(
-                lungX,
-                lungVerticalOffset
-            );
-    }
-
-    // ============================================================
-    // LUNG BRIGHTNESS
-    // ============================================================
-
-    private void UpdateLungBrightness()
-    {
-        if (lungImage == null)
-        {
-            return;
-        }
-
-        float progress =
-            (float)currentSquares /
-            MAX_SQUARES;
-
-        progress =
-            Mathf.Clamp01(progress);
-
-        // 0 = bright
-        // 15 = dark
-        float brightness =
-            Mathf.Lerp(
-                lungBrightnessAtZero,
-                lungBrightnessAtMaximum,
-                progress
-            );
-
-        lungImage.color =
-            new Color(
-                brightness,
-                brightness,
-                brightness,
-                1f
-            );
-    }
-
-    // ============================================================
-    // LUNG PULSE
-    // ============================================================
-
-    private IEnumerator LungPulseLoop()
-    {
-        bool large =
-            true;
-
-        while (enabled)
-        {
-            if (lungRect != null)
-            {
-                lungRect.localScale =
-                    Vector3.one *
-                    (
-                        large
-                            ? lungLargeScale
-                            : lungSmallScale
-                    );
-            }
-
-            large =
-                !large;
-
-            yield return new WaitForSeconds(
-                lungPulseInterval
-            );
-        }
-    }
-
-    // ============================================================
     // SPAWN LOOP
     // ============================================================
 
-    private IEnumerator SpawnLoop()
-    {
-        while (enabled)
-        {
-            float waitTime =
-                Random.Range(
-                    minSpawnInterval,
-                    maxSpawnInterval
-                );
+    // private IEnumerator SpawnLoop()
+    // {
+    //     while (enabled)
+    //     {
+    //         float waitTime = Random.Range(
+    //             minSpawnInterval,
+    //             maxSpawnInterval
+    //         );
 
-            yield return new WaitForSeconds(
-                waitTime
-            );
+    //         yield return new WaitForSeconds(
+    //             waitTime
+    //         );
 
-            if (currentSquares >= MAX_SQUARES)
-            {
-                continue;
-            }
+    //         // Never exceed 15 active squares.
+    //         if (currentSquares >= MAX_SQUARES)
+    //         {
+    //             continue;
+    //         }
 
-            SpawnSquare();
-        }
-    }
+    //         SpawnSquare();
+    //     }
+    // }
 
     // ============================================================
     // SPAWN SQUARE
     // ============================================================
 
-    private void SpawnSquare()
-    {
-        ClampCounter();
+    // private void SpawnSquare()
+    // {
+    //     // Safety check.
+    //     ClampCounter();
 
-        if (currentSquares >= MAX_SQUARES)
-        {
-            return;
-        }
+    //     if (currentSquares >= MAX_SQUARES)
+    //     {
+    //         return;
+    //     }
 
-        GameObject squareObject =
-            new GameObject(
-                "ClickableSquare",
-                typeof(RectTransform),
-                typeof(Image)
-            );
+    //     GameObject squareObject = new GameObject(
+    //         "ClickableSquare",
+    //         typeof(RectTransform),
+    //         typeof(Image)
+    //     );
 
-        squareObject.transform.SetParent(
-            uiCanvas,
-            false
-        );
+    //     squareObject.transform.SetParent(
+    //         uiCanvas,
+    //         false
+    //     );
 
-        RectTransform squareRect =
-            squareObject.GetComponent<RectTransform>();
+    //     RectTransform squareRect =
+    //         squareObject.GetComponent<RectTransform>();
 
-        Image squareImage =
-            squareObject.GetComponent<Image>();
+    //     Image squareImage =
+    //         squareObject.GetComponent<Image>();
 
-        squareRect.sizeDelta =
-            new Vector2(
-                squareSize,
-                squareSize
-            );
+    //     // Set square size.
+    //     squareRect.sizeDelta =
+    //         new Vector2(
+    //             squareSize,
+    //             squareSize
+    //         );
 
-        squareImage.color =
-            squareColor;
+    //     // Set appearance.
+    //     squareImage.color =
+    //         squareColor;
 
-        squareImage.raycastTarget =
-            true;
+    //     squareImage.raycastTarget =
+    //         true;
 
-        squareRect.anchoredPosition =
-            GetRandomPlayablePosition();
+    //     // Put it at a random valid position.
+    //     squareRect.anchoredPosition =
+    //         GetRandomPlayablePosition();
 
-        ClickableSquare clickableSquare =
-            squareObject.AddComponent<
-                ClickableSquare
-            >();
+    //     // Add the click handler.
+    //     ClickableSquare clickableSquare =
+    //         squareObject.AddComponent<ClickableSquare>();
 
-        clickableSquare.Initialize(
-            this
-        );
+    //     clickableSquare.Initialize(
+    //         this
+    //     );
 
-        currentSquares++;
+    //     // --------------------------------------------------------
+    //     // IMPORTANT:
+    //     // Only now do we increment the authoritative counter.
+    //     // --------------------------------------------------------
 
-        ClampCounter();
+    //     currentSquares++;
 
-        UpdateProgressBar();
-    }
+    //     ClampCounter();
+
+    //     UpdateProgressBar();
+    // }
 
     // ============================================================
     // RANDOM POSITION
     // ============================================================
 
-    private Vector2 GetRandomPlayablePosition()
+    // private Vector2 GetRandomPlayablePosition()
+    // {
+    //     Rect canvasRect =
+    //         uiCanvas.rect;
+
+    //     float halfSquare =
+    //         squareSize * 0.5f;
+
+    //     float minX =
+    //         canvasRect.xMin +
+    //         playableAreaPadding +
+    //         halfSquare;
+
+    //     float maxX =
+    //         canvasRect.xMax -
+    //         playableAreaPadding -
+    //         halfSquare;
+
+    //     float minY =
+    //         canvasRect.yMin +
+    //         playableAreaPadding +
+    //         halfSquare;
+
+    //     float maxY =
+    //         canvasRect.yMax -
+    //         playableAreaPadding -
+    //         halfSquare;
+
+    //     // Prevent invalid ranges on very small canvases.
+    //     if (maxX < minX)
+    //     {
+    //         float centerX =
+    //             (canvasRect.xMin +
+    //              canvasRect.xMax) *
+    //             0.5f;
+
+    //         minX = centerX;
+    //         maxX = centerX;
+    //     }
+
+    //     if (maxY < minY)
+    //     {
+    //         float centerY =
+    //             (canvasRect.yMin +
+    //              canvasRect.yMax) *
+    //             0.5f;
+
+    //         minY = centerY;
+    //         maxY = centerY;
+    //     }
+
+    //     return new Vector2(
+    //         Random.Range(minX, maxX),
+    //         Random.Range(minY, maxY)
+    //     );
+    // }
+    
+    // ============================================================
+    // METHOD BARU: PENGURANG NILAI ISPA
+    // ============================================================
+    public void KurangiISPA(int amount = 1)
     {
-        Rect canvasRect =
-            uiCanvas.rect;
-
-        float halfSquare =
-            squareSize * 0.5f;
-
-        float minX =
-            canvasRect.xMin +
-            playableAreaPadding +
-            halfSquare;
-
-        float maxX =
-            canvasRect.xMax -
-            playableAreaPadding -
-            halfSquare;
-
-        float minY =
-            canvasRect.yMin +
-            playableAreaPadding +
-            halfSquare;
-
-        float maxY =
-            canvasRect.yMax -
-            playableAreaPadding -
-            halfSquare;
-
-        if (maxX < minX)
-        {
-            float centerX =
-                (
-                    canvasRect.xMin +
-                    canvasRect.xMax
-                ) * 0.5f;
-
-            minX = centerX;
-            maxX = centerX;
-        }
-
-        if (maxY < minY)
-        {
-            float centerY =
-                (
-                    canvasRect.yMin +
-                    canvasRect.yMax
-                ) * 0.5f;
-
-            minY = centerY;
-            maxY = centerY;
-        }
-
-        return new Vector2(
-            Random.Range(minX, maxX),
-            Random.Range(minY, maxY)
-        );
+        currentSquares -= amount;
+        ClampCounter();
+        UpdateProgressBar();
     }
-
+    
     // ============================================================
     // SQUARE CLICKED
     // ============================================================
@@ -917,6 +452,7 @@ public class ISPAlevel : MonoBehaviour
             return;
         }
 
+        // The same square must never be counted twice.
         if (square.HasBeenClicked)
         {
             return;
@@ -924,14 +460,18 @@ public class ISPAlevel : MonoBehaviour
 
         square.MarkAsClicked();
 
+        // Destroy the square.
         Destroy(
             square.gameObject
         );
 
+        // Decrease the authoritative counter exactly once.
         currentSquares--;
 
+        // Never go below zero.
         ClampCounter();
 
+        // Immediately update the UI.
         UpdateProgressBar();
     }
 
@@ -950,7 +490,7 @@ public class ISPAlevel : MonoBehaviour
     }
 
     // ============================================================
-    // UPDATE PROGRESS BAR
+    // PROGRESS BAR UPDATE
     // ============================================================
 
     public void UpdateProgressBar()
@@ -963,7 +503,13 @@ public class ISPAlevel : MonoBehaviour
         ClampCounter();
 
         // --------------------------------------------------------
-        // PROGRESS
+        // PROGRESS CALCULATION
+        //
+        // 0 / 15  = 0%
+        // 1 / 15  = 6.67%
+        // 5 / 15  = 33.33%
+        // 10 / 15 = 66.67%
+        // 15 / 15 = 100%
         // --------------------------------------------------------
 
         float progress =
@@ -973,13 +519,9 @@ public class ISPAlevel : MonoBehaviour
         progress =
             Mathf.Clamp01(progress);
 
-        // --------------------------------------------------------
-        // FILL WIDTH
-        // --------------------------------------------------------
-
+        // Leave a small grey border around the fill.
         float usableWidth =
-            progressBarWidth -
-            progressBarBorderThickness * 2f;
+            progressBarWidth - 6f;
 
         usableWidth =
             Mathf.Max(
@@ -990,35 +532,32 @@ public class ISPAlevel : MonoBehaviour
         float fillWidth =
             usableWidth * progress;
 
+        RectTransform fillRect =
+            fillImage.rectTransform;
+
         fillRect.sizeDelta =
             new Vector2(
                 fillWidth,
-                -progressBarBorderThickness * 2f
+                -6f
             );
 
         // --------------------------------------------------------
-        // COLOR GRADIENT
+        // COLOR
         //
-        // 0  = PINK
-        // 15 = DARK PURPLE
-        //
-        // Every number in between is interpolated.
+        // 0-9  = ORANGE
+        // 10-15 = RED
         // --------------------------------------------------------
 
-        fillImage.color =
-            Color.Lerp(
-                pinkFillColor,
-                darkPurpleFillColor,
-                progress
-            );
-
-        // --------------------------------------------------------
-        // LUNG
-        // --------------------------------------------------------
-
-        UpdateLungPosition();
-
-        UpdateLungBrightness();
+        if (currentSquares >= 10)
+        {
+            fillImage.color =
+                redFillColor;
+        }
+        else
+        {
+            fillImage.color =
+                orangeFillColor;
+        }
     }
 
     // ============================================================
@@ -1044,15 +583,11 @@ public class ISPAlevel : MonoBehaviour
         ClickableSquare[] squares =
             FindObjectsByType<ClickableSquare>(FindObjectsSortMode.None);
 
-        foreach (
-            ClickableSquare square
-            in squares
-        )
+
+        foreach (ClickableSquare square in squares)
         {
-            if (
-                square != null &&
-                square.Owner == this
-            )
+            if (square != null &&
+                square.Owner == this)
             {
                 Destroy(
                     square.gameObject
@@ -1072,18 +607,18 @@ public class ISPAlevel : MonoBehaviour
     // ============================================================
 
     [ContextMenu("Spawn Square Now")]
-    private void SpawnSquareFromEditor()
-    {
-        if (!Application.isPlaying)
-        {
-            return;
-        }
+    // private void SpawnSquareFromEditor()
+    // {
+    //     if (!Application.isPlaying)
+    //     {
+    //         return;
+    //     }
 
-        if (currentSquares < MAX_SQUARES)
-        {
-            SpawnSquare();
-        }
-    }
+    //     if (currentSquares < MAX_SQUARES)
+    //     {
+    //         SpawnSquare();
+    //     }
+    // }
 
     // ============================================================
     // DEBUG: RESET
@@ -1102,6 +637,9 @@ public class ISPAlevel : MonoBehaviour
 
     // ============================================================
     // CLICKABLE SQUARE
+    //
+    // This is intentionally inside the same C# file.
+    // No second script is required.
     // ============================================================
 
     private class ClickableSquare :
@@ -1149,11 +687,13 @@ public class ISPAlevel : MonoBehaviour
             PointerEventData eventData
         )
         {
+            // Prevent duplicate click processing.
             if (hasBeenClicked)
             {
                 return;
             }
 
+            // Make sure the game controller still exists.
             if (owner == null)
             {
                 return;
@@ -1165,5 +705,3 @@ public class ISPAlevel : MonoBehaviour
         }
     }
 }
-
-

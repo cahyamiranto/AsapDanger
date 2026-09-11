@@ -11,6 +11,10 @@ public class ClickableTarget : MonoBehaviour
     [Header("Konfigurasi Target")]
     [SerializeField] private TargetType tipeTarget;
 
+    [Header("ISPA Setting")]
+    [Tooltip("Jumlah penurunan level ISPA saat objek ini diklik")]
+    [SerializeField] private int ispaReduction = 1;
+
     private void OnMouseDown()
     {
         if (tipeTarget == TargetType.BushPadamkan)
@@ -20,7 +24,7 @@ public class ClickableTarget : MonoBehaviour
             {
                 if (!ScoreManager.Instance.BisaPadamkanBush())
                 {
-                    // Score tidak cukup: jangan kurangi quest dan JANGAN delete object
+                    // Score tidak cukup: jangan kurangi quest dan JANGAN nonaktifkan object
                     return; 
                 }
 
@@ -32,10 +36,15 @@ public class ClickableTarget : MonoBehaviour
             {
                 QuestManager.Instance.KurangiPadamkan();
             }
+            
+            // 3. Turunkan Bar ISPA
+            if (ISPAlevel.Instance != null)
+            {
+                ISPAlevel.Instance.KurangiISPA(ispaReduction);
+            }
 
-            // 3. Hapus sprite bush dari scene
-            //Destroy(gameObject);
-            gameObject.SetActive(false);
+            // 4. Nonaktifkan parent
+            HideParent();
         }
         else if (tipeTarget == TargetType.NpcLapor)
         {
@@ -51,8 +60,25 @@ public class ClickableTarget : MonoBehaviour
                 ScoreManager.Instance.OnNpcClicked();
             }
 
-            // 3. Hapus sprite NPC dari scene
-            //Destroy(gameObject);
+            // 3. Turunkan Bar ISPA
+            if (ISPAlevel.Instance != null)
+            {
+                ISPAlevel.Instance.KurangiISPA(ispaReduction);
+            }
+
+            // 4. Nonaktifkan parent
+            gameObject.SetActive(false);
+        }
+    }
+
+    private void HideParent()
+    {
+        if (transform.parent != null)
+        {
+            transform.parent.gameObject.SetActive(false);
+        }
+        else
+        {
             gameObject.SetActive(false);
         }
     }

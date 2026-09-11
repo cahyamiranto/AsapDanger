@@ -1,0 +1,79 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7463653765960610215
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3522301871881079359}
+  - component: {fileID: 4590369639871860997}
+  - component: {fileID: 7045704379996281720}
+  m_Layer: 0
+  m_Name: Asap_GameManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3522301871881079359
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7463653765960610215}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -2.9103937, y: -10.482507, z: -0.30904838}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4590369639871860997
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7463653765960610215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d553a39f15abb42c4af52affa65c1f8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentLevel: 1
+  levelConfigs:
+  - targetLapor: 3
+    targetPadamkan: 3
+  - targetLapor: 4
+    targetPadamkan: 4
+  - targetLapor: 5
+    targetPadamkan: 5
+  textQuestLapor: {fileID: 0}
+  textQuestPadamkan: {fileID: 0}
+  textLevel: {fileID: 0}
+  sisaLapor: 0
+  sisaPadamkan: 0
+--- !u!114 &7045704379996281720
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7463653765960610215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 75758b6b05a9649c595865f08055aa14, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  biayaPadamkanBush: 5
+  poinNpc: 5
+  warnaPeringatan: {r: 1, g: 0, b: 0, a: 1}
+  jumlahKedipan: 3
+  durasiKedip: 0.12
+  textScore: {fileID: 0}
+  currentScore: 0
