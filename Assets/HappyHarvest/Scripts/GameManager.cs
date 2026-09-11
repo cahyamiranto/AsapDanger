@@ -246,19 +246,19 @@ namespace HappyHarvest
         
         public static void RegisterEventHandler(DayEventHandler handler)
         {
-            foreach (var evt in handler.Events)
-            {
-                if (evt.IsInRange(GameManager.Instance.CurrentDayRatio))
-                {
-                    evt.OnEvents.Invoke();
-                }
-                else
-                {
-                    evt.OffEvent.Invoke();
-                }
-            }
+            // foreach (var evt in handler.Events)
+            // {
+            //     if (evt.IsInRange(GameManager.Instance.CurrentDayRatio))
+            //     {
+            //         evt.OnEvents.Invoke();
+            //     }
+            //     else
+            //     {
+            //         evt.OffEvent.Invoke();
+            //     }
+            // }
             
-            Instance.m_EventHandlers.Add(handler);
+            // Instance.m_EventHandlers.Add(handler);
         }
 
         public static void RemoveEventHandler(DayEventHandler handler)
