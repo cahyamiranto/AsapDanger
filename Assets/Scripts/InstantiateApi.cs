@@ -74,6 +74,8 @@ public class InstantiateApi : MonoBehaviour
 
     private float waitTime;
 
+    public AudioSource apiSoundEffect;
+
     // ============================================================
     // UNITY
     // ============================================================
@@ -112,6 +114,7 @@ public class InstantiateApi : MonoBehaviour
                 // Tambah counter dan perbarui UI
                 ispaSlider.value++;
                 UpdateProgressBar();
+                apiSoundEffect.Play();
 
                 DelayScript delayScript =
                     selectedApi.GetComponentInChildren<DelayScript>();
