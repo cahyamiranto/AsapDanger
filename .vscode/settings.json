@@ -67,6 +67,6 @@
         "*.sln": "*.csproj",
         "*.slnx": "*.csproj"
     },
-    "dotnet.defaultSolution": "AsapDanger2.slnx",
+    "dotnet.defaultSolution": "AsapDanger.slnx",
     "dotnet.enableWorkspaceBasedDevelopment": false
 }

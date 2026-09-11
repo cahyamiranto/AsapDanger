@@ -5,6 +5,8 @@ using UnityEngine.UI;
 
 public class ISPAlevel : MonoBehaviour
 {
+    // Tambahkan Singleton agar mudah diakses
+    public static ISPAlevel Instance { get; private set; }
     // ============================================================
     // GAME SETTINGS
     // ============================================================
@@ -70,7 +72,10 @@ public class ISPAlevel : MonoBehaviour
     // ============================================================
 
     private void Awake()
-    {
+    {// Setup Singleton
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+
         minSpawnInterval = Mathf.Max(0.05f, minSpawnInterval);
         maxSpawnInterval = Mathf.Max(
             minSpawnInterval,
@@ -423,7 +428,17 @@ public class ISPAlevel : MonoBehaviour
     //         Random.Range(minY, maxY)
     //     );
     // }
-
+    
+    // ============================================================
+    // METHOD BARU: PENGURANG NILAI ISPA
+    // ============================================================
+    public void KurangiISPA(int amount = 1)
+    {
+        currentSquares -= amount;
+        ClampCounter();
+        UpdateProgressBar();
+    }
+    
     // ============================================================
     // SQUARE CLICKED
     // ============================================================

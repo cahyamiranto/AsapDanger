@@ -11,6 +11,10 @@ public class ClickableTarget : MonoBehaviour
     [Header("Konfigurasi Target")]
     [SerializeField] private TargetType tipeTarget;
 
+    [Header("ISPA Setting")]
+    [Tooltip("Jumlah penurunan level ISPA saat objek ini diklik")]
+    [SerializeField] private int ispaReduction = 1;
+
     private void OnMouseDown()
     {
         if (tipeTarget == TargetType.BushPadamkan)
@@ -32,8 +36,14 @@ public class ClickableTarget : MonoBehaviour
             {
                 QuestManager.Instance.KurangiPadamkan();
             }
+            
+            // 3. Turunkan Bar ISPA
+            if (ISPAlevel.Instance != null)
+            {
+                ISPAlevel.Instance.KurangiISPA(ispaReduction);
+            }
 
-            // 3. Nonaktifkan parent dari objek ini
+            // 4. Nonaktifkan parent
             HideParent();
         }
         else if (tipeTarget == TargetType.NpcLapor)
@@ -50,7 +60,13 @@ public class ClickableTarget : MonoBehaviour
                 ScoreManager.Instance.OnNpcClicked();
             }
 
-            // 3. Nonaktifkan parent dari objek ini
+            // 3. Turunkan Bar ISPA
+            if (ISPAlevel.Instance != null)
+            {
+                ISPAlevel.Instance.KurangiISPA(ispaReduction);
+            }
+
+            // 4. Nonaktifkan parent
             gameObject.SetActive(false);
         }
     }
